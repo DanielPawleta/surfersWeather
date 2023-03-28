@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
+import surfersWeather.model.WeatherbitResponseDTO;
 
 @Slf4j
 @RestController
@@ -13,7 +14,13 @@ public class Controller {
     @GetMapping("/forecast")
     public void getForecast() {
         RestTemplate restTemplate = new RestTemplate();
-        String responseString = restTemplate.getForObject(EXTERNAL_API_URI, String.class);
-        log.info(responseString);
+        WeatherbitResponseDTO weatherbitResponseDTO = restTemplate.getForObject(EXTERNAL_API_URI, WeatherbitResponseDTO.class);
+
+        if (weatherbitResponseDTO!=null) {
+            log.info(weatherbitResponseDTO.getCityName());
+            log.info(weatherbitResponseDTO.getConditionsForDateDTOList().get(0).getTemp());
+            log.info(weatherbitResponseDTO.getConditionsForDateDTOList().get(0).getWindSpeed());
+        }
+        else throw new NullPointerException();
     }
 }
