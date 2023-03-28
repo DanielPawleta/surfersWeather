@@ -2,7 +2,6 @@ package surfersWeather.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestTemplate;
 import surfersWeather.model.WeatherbitResponseDTO;
 
