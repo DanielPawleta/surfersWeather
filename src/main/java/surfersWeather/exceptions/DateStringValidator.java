@@ -33,8 +33,8 @@ public class DateStringValidator {
     }
 
     public void checkRequestedDateForAllowedRange(Date requestedDate) {
-        if (ChronoUnit.DAYS.between(new Date().toInstant(), requestedDate.toInstant()) >= 15) {
-            throw new DateStringParamException("Requested date beyond 16-days forecast");
+        if (ChronoUnit.DAYS.between(new Date().toInstant(), requestedDate.toInstant()) >= 6) {
+            throw new DateStringParamException("Requested date beyond 7-days forecast");
         }
         if (ChronoUnit.DAYS.between(new Date().toInstant(), requestedDate.toInstant()) < 0) {
             throw new DateStringParamException("Requested date before today");
