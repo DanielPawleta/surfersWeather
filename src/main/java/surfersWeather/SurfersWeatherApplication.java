@@ -9,18 +9,18 @@ import surfersWeather.exceptions.DateStringValidator;
 @SpringBootApplication
 public class SurfersWeatherApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(SurfersWeatherApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(SurfersWeatherApplication.class, args);
+    }
 
-	@Bean
-	public RestTemplate restTemplate() {
-		return new RestTemplate();
-	}
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
+    }
 
-	@Bean
-	public DateStringValidator dateStringValidator() {
-		return new DateStringValidator();
-	}
+    @Bean
+    public DateStringValidator dateStringValidator() {
+        return new DateStringValidator();
+    }
 
 }

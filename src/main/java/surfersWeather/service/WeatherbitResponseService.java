@@ -4,8 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import surfersWeather.model.ForecastForRequestedDate;
 import surfersWeather.model.ConditionsForDateDTO;
+import surfersWeather.model.ForecastForRequestedDate;
 import surfersWeather.model.WeatherbitResponseDTO;
 
 import java.util.ArrayList;
@@ -43,7 +43,7 @@ public class WeatherbitResponseService {
         weatherbitResponseDTOList.forEach(weatherbitResponseDTO ->
                 weatherbitResponseDTO.getConditionsForDateDTOList().stream()
                         .filter(this::filterConditions)
-                        .forEach(conditionsForDateDTO -> createCityForecastForRequestedDateObject(weatherbitResponseDTO, conditionsForDateDTO)));
+                        .forEach(conditionsForDateDTO -> createForecastForRequestedDateObject(weatherbitResponseDTO, conditionsForDateDTO)));
     }
 
     public boolean filterConditions(ConditionsForDateDTO conditionsForDateDTO) {
@@ -54,7 +54,7 @@ public class WeatherbitResponseService {
                 Double.parseDouble(conditionsForDateDTO.getWindSpeed()) <= 18;
     }
 
-    private void createCityForecastForRequestedDateObject(WeatherbitResponseDTO weatherbitResponseDTO, ConditionsForDateDTO conditionsForDateDTO) {
+    private void createForecastForRequestedDateObject(WeatherbitResponseDTO weatherbitResponseDTO, ConditionsForDateDTO conditionsForDateDTO) {
         String cityName = weatherbitResponseDTO.getCityName();
         log.info("City name = {} ", cityName);
         String temp = conditionsForDateDTO.getTemp();
@@ -65,11 +65,11 @@ public class WeatherbitResponseService {
         forecastForRequestedDateList.add(forecastForRequestedDate);
     }
 
-    public double calculatePointsForConditions(String temp, String wind_spd) {
-        log.info("Temp = {} wind speed = {}", temp, wind_spd);
+    public double calculatePointsForConditions(String temp, String windSpd) {
+        log.info("Temp = {} wind speed = {}", temp, windSpd);
 
         double temperature = Double.parseDouble(temp);
-        double windSpeed = Double.parseDouble(wind_spd);
+        double windSpeed = Double.parseDouble(windSpd);
 
         double pointsForConditions = windSpeed * 3 + temperature;
         log.info("Points = {}", pointsForConditions);
