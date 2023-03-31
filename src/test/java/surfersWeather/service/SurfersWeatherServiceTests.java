@@ -67,7 +67,7 @@ class SurfersWeatherServiceTests {
 
 		int expectedListSize = 7;
 		SurfersWeatherService surfersWeatherService = new SurfersWeatherService("fakeURI", restTemplate, weatherbitResponseService);
-		WeatherbitResponseDTO weatherbitResponseDTO = surfersWeatherService.getForecastFromExternalAPI(CitiesEnum.Jastarnia);
+		WeatherbitResponseDTO weatherbitResponseDTO = surfersWeatherService.getForecastFromExternalAPI(CitiesEnum.Bridgetown);
 		assertThat(weatherbitResponseDTO.getConditionsForDateDTOList().size()).withFailMessage("GetForecastFromExternalAPI method didn't return expected list size from stub response").isEqualTo(expectedListSize);
 	}
 

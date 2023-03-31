@@ -111,7 +111,7 @@ public class WeatherbitResponseServiceTests {
         WeatherbitResponseService weatherbitResponseService = new WeatherbitResponseService();
         weatherbitResponseService.setWeatherbitResponseDTOList(weatherbitResponseDTOListWithStubbedResponses);
         weatherbitResponseService.setDateString("2023-02-11");
-        weatherbitResponseService.createCityForecastForRequestedDateObjectFromResponsesMeetingRequirements();
+        weatherbitResponseService.createForecastForRequestedDateObjectFromResponsesMeetingRequirements();
 
         List<ForecastForRequestedDate> forecastForRequestedDateListFromMethod = weatherbitResponseService.getForecastForRequestedDateList();
         forecastForRequestedDateListFromMethod.sort(Comparator.comparing(ForecastForRequestedDate::getPointsForConditions));
@@ -137,7 +137,7 @@ public class WeatherbitResponseServiceTests {
         String expectedBestCityName = "Bridgetown";
 
         WeatherbitResponseService weatherbitResponseServiceMock = Mockito.spy(WeatherbitResponseService.class);
-        doNothing().when(weatherbitResponseServiceMock).createCityForecastForRequestedDateObjectFromResponsesMeetingRequirements();
+        doNothing().when(weatherbitResponseServiceMock).createForecastForRequestedDateObjectFromResponsesMeetingRequirements();
         weatherbitResponseServiceMock.setForecastForRequestedDateList(expectedForecastForRequestedDateList);
         ForecastForRequestedDate cityForecastForRequestedDate = weatherbitResponseServiceMock.findBestCityForecast();
 

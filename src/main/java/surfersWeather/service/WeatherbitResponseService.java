@@ -18,12 +18,12 @@ import java.util.Optional;
 @Slf4j
 @Service
 public class WeatherbitResponseService {
-    private List<ForecastForRequestedDate> forecastForRequestedDateList = new ArrayList<>();
+    private List<ForecastForRequestedDate> forecastForRequestedDateList;
     private List<WeatherbitResponseDTO> weatherbitResponseDTOList;
     private String dateString;
 
     public ForecastForRequestedDate findBestCityForecast() {
-        createCityForecastForRequestedDateObjectFromResponsesMeetingRequirements();
+        createForecastForRequestedDateObjectFromResponsesMeetingRequirements();
 
         Optional<ForecastForRequestedDate> cityForecastOptional = getMaxCalculatedPointsForConditions();
 
@@ -39,7 +39,8 @@ public class WeatherbitResponseService {
         }
     }
 
-    public void createCityForecastForRequestedDateObjectFromResponsesMeetingRequirements() {
+    public void createForecastForRequestedDateObjectFromResponsesMeetingRequirements() {
+        forecastForRequestedDateList = new ArrayList<>();
         weatherbitResponseDTOList.forEach(weatherbitResponseDTO ->
                 weatherbitResponseDTO.getConditionsForDateDTOList().stream()
                         .filter(this::filterConditions)
