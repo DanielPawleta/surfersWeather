@@ -10,6 +10,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ForecastForRequestedDate {
+
     private String cityName;
     private String temp;
     private String windSpeed;

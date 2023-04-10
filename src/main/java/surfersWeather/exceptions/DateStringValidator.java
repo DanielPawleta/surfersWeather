@@ -11,18 +11,15 @@ public class DateStringValidator {
         if (dateString == null) {
             throw new DateStringParamException("Provided date string is empty");
         }
-
         if (!dateString.matches("\\d{4}-\\d{2}-\\d{2}")) {
             throw new DateStringParamException("Wrong date pattern");
         }
-
         Date requestedDate;
         try {
             requestedDate = parseDateStringToDate(dateString);
         } catch (ParseException e) {
             throw new DateStringParamException("Wrong date format");
         }
-
         checkRequestedDateForAllowedRange(requestedDate);
     }
 

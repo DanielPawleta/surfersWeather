@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
@@ -25,7 +26,7 @@ import static org.mockito.Mockito.when;
 
 @Slf4j
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class SurfersWeatherServiceTests {
+class WeatherbitAPIServiceTests {
 
 	WeatherbitResponseDTO weatherbitResponseDTO;
 	List<WeatherbitResponseDTO> weatherbitResponseDTOList;
@@ -33,8 +34,12 @@ class SurfersWeatherServiceTests {
 	@Mock
 	RestTemplate restTemplate;
 
+	//@Mock
+	@InjectMocks
+	WeatherbitAPIService weatherbitAPIService;
+
 	@Spy
-	WeatherbitResponseService weatherbitResponseService;
+	ForecastCalculateService forecastCalculateService = new ForecastCalculateService();
 
 	@BeforeEach
 	public void init() {
@@ -61,24 +66,40 @@ class SurfersWeatherServiceTests {
 		}
 	}
 
+
 	@Test
 	public void getForecastFromExternalAPI_should_return_expected_list_size() {
 		when(restTemplate.getForObject(Mockito.anyString(), Mockito.any())).thenReturn(weatherbitResponseDTOList.get(0));
 
 		int expectedListSize = 7;
-		SurfersWeatherService surfersWeatherService = new SurfersWeatherService("fakeURI", restTemplate, weatherbitResponseService);
-		WeatherbitResponseDTO weatherbitResponseDTO = surfersWeatherService.getForecastFromExternalAPI(CitiesEnum.Bridgetown);
+		//WeatherbitAPIService weatherbitAPIService = new WeatherbitAPIService(restTemplate, forecastCalculateService);
+		WeatherbitResponseDTO weatherbitResponseDTO = weatherbitAPIService.getForecastFromExternalAPI(CitiesEnum.Bridgetown);
 		assertThat(weatherbitResponseDTO.getConditionsForDateDTOList().size()).withFailMessage("GetForecastFromExternalAPI method didn't return expected list size from stub response").isEqualTo(expectedListSize);
 	}
 
+
+/*
 	@Test
 	public void getForecast_should_return_expected_best_forecast() {
-		SurfersWeatherService mockSurfersWeatherService = Mockito.mock(SurfersWeatherService.class, Mockito.withSettings().useConstructor("fakeURI", restTemplate, weatherbitResponseService));
 
-		when(mockSurfersWeatherService.getForecastForEnumCities()).thenReturn(weatherbitResponseDTOList);
-		when(mockSurfersWeatherService.getForecast(Mockito.anyString())).thenCallRealMethod();
+		when(weatherbitAPIService.getForecastForEnumCities()).thenReturn(weatherbitResponseDTOList);
+		when(weatherbitAPIService.getBestForecastForRequestedDate(Mockito.anyString())).thenCallRealMethod();
 
 		String expectedBestForecastCity = "Bridgetown";
-		Assertions.assertEquals(mockSurfersWeatherService.getForecast("2023-02-11").getCityName(), expectedBestForecastCity, "Returned best city forecast don't match with expected");
+		Assertions.assertEquals(weatherbitAPIService.getBestForecastForRequestedDate("2023-02-11").getCityName(), expectedBestForecastCity, "Returned best city forecast don't match with expected");
 	}
+
+ */
+
+
+	@Test
+	public void getForecast_should_return_expected_best_forecast() {
+		WeatherbitAPIService mockSurfersWeatherService = Mockito.mock(WeatherbitAPIService.class, Mockito.withSettings().useConstructor(restTemplate, forecastCalculateService));
+		when(mockSurfersWeatherService.getForecastForEnumCities()).thenReturn(weatherbitResponseDTOList);
+		when(mockSurfersWeatherService.getBestForecastForRequestedDate(Mockito.anyString())).thenCallRealMethod();
+		String expectedBestForecastCity = "Bridgetown";
+		Assertions.assertEquals(expectedBestForecastCity, mockSurfersWeatherService.getBestForecastForRequestedDate("2023-02-11").getCityName(), "Returned best city forecast don't match with expected");
+	}
+
+
 }

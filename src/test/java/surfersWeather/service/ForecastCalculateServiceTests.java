@@ -21,7 +21,8 @@ import java.util.stream.IntStream;
 import static org.mockito.Mockito.doNothing;
 
 @Slf4j
-public class WeatherbitResponseServiceTests {
+public class ForecastCalculateServiceTests {
+
     WeatherbitResponseDTO weatherbitResponseDTO;
     List<WeatherbitResponseDTO> weatherbitResponseDTOListWithStubbedResponses;
     List<ForecastForRequestedDate> expectedForecastForRequestedDateList;
@@ -44,8 +45,8 @@ public class WeatherbitResponseServiceTests {
             }
         }
         for (EnumConditionsTest enumConditionsTest : EnumConditionsTest.values()) {
-            WeatherbitResponseService weatherbitResponseService = new WeatherbitResponseService();
-            double calculatedPoints = weatherbitResponseService.calculatePointsForConditions(enumConditionsTest.temp, enumConditionsTest.windSpeed);
+            ForecastCalculateService forecastCalculateService = new ForecastCalculateService();
+            double calculatedPoints = forecastCalculateService.calculatePointsForConditions(enumConditionsTest.temp, enumConditionsTest.windSpeed);
             Assertions.assertTrue((Math.abs(enumConditionsTest.expectedPoints - calculatedPoints) < 0.01), "Calculated points don't match with expected");
         }
     }
@@ -53,7 +54,6 @@ public class WeatherbitResponseServiceTests {
     public void init_WeatherbitResponseListWithStubbedResponses() {
         ObjectMapper objectMapper = new ObjectMapper();
         weatherbitResponseDTOListWithStubbedResponses = new ArrayList<>();
-
         try {
             Files.walk(Path.of("src/test/resources/testStubResponses")).forEach(path -> {
                         File file = new File(String.valueOf(path));
@@ -74,7 +74,7 @@ public class WeatherbitResponseServiceTests {
         }
     }
 
-    public void init_expected_CityForecastList() {
+    public void init_ExpectedForecastForRequestedDateList() {
         enum EnumExpectedCityForecast {
             Bridgetown("Bridgetown", "25.4", "9.6", 54.199999999999996),
             Fortaleza("Fortaleza", "27.6", "5.7", 44.7);
@@ -106,14 +106,15 @@ public class WeatherbitResponseServiceTests {
     @Test
     public void createCityForecastObjectsListForRequestedDate_with_stubbed_responses_should_match_hardcoded_list() {
         init_WeatherbitResponseListWithStubbedResponses();
-        init_expected_CityForecastList();
+        init_ExpectedForecastForRequestedDateList();
 
-        WeatherbitResponseService weatherbitResponseService = new WeatherbitResponseService();
-        weatherbitResponseService.setWeatherbitResponseDTOList(weatherbitResponseDTOListWithStubbedResponses);
-        weatherbitResponseService.setDateString("2023-02-11");
-        weatherbitResponseService.createForecastForRequestedDateObjectFromResponsesMeetingRequirements();
+        ForecastCalculateService forecastCalculateService = new ForecastCalculateService();
+        forecastCalculateService.setForecastForRequestedDateList(new ArrayList<>());
+        forecastCalculateService.setWeatherbitResponseDTOList(weatherbitResponseDTOListWithStubbedResponses);
+        forecastCalculateService.setDateString("2023-02-11");
+        forecastCalculateService.createForecastForRequestedDateObjectFromResponsesMeetingRequirements();
 
-        List<ForecastForRequestedDate> forecastForRequestedDateListFromMethod = weatherbitResponseService.getForecastForRequestedDateList();
+        List<ForecastForRequestedDate> forecastForRequestedDateListFromMethod = forecastCalculateService.getForecastForRequestedDateList();
         forecastForRequestedDateListFromMethod.sort(Comparator.comparing(ForecastForRequestedDate::getPointsForConditions));
 
         AtomicBoolean same = new AtomicBoolean(true);
@@ -133,14 +134,14 @@ public class WeatherbitResponseServiceTests {
 
     @Test
     public void findBestCityForecast_from_stubbed_responses_list_should_return_given_city_name() {
-        init_expected_CityForecastList();
+        init_ExpectedForecastForRequestedDateList();
         String expectedBestCityName = "Bridgetown";
 
-        WeatherbitResponseService weatherbitResponseServiceMock = Mockito.spy(WeatherbitResponseService.class);
-        doNothing().when(weatherbitResponseServiceMock).createForecastForRequestedDateObjectFromResponsesMeetingRequirements();
-        weatherbitResponseServiceMock.setForecastForRequestedDateList(expectedForecastForRequestedDateList);
-        ForecastForRequestedDate cityForecastForRequestedDate = weatherbitResponseServiceMock.findBestCityForecast();
+        ForecastCalculateService forecastCalculateServiceSpy = Mockito.spy(ForecastCalculateService.class);
+        doNothing().when(forecastCalculateServiceSpy).createForecastForRequestedDateObjectFromResponsesMeetingRequirements();
+        forecastCalculateServiceSpy.setForecastForRequestedDateList(expectedForecastForRequestedDateList);
+        ForecastForRequestedDate forecastForRequestedDate = forecastCalculateServiceSpy.findBestCityForecast();
 
-        Assertions.assertEquals(cityForecastForRequestedDate.getCityName(), expectedBestCityName, "Calculated points don't match with expected");
+        Assertions.assertEquals(expectedBestCityName, forecastForRequestedDate.getCityName(), "Calculated location don't match with expected");
     }
 }

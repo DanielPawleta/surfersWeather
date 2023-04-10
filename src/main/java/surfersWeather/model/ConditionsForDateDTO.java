@@ -9,11 +9,10 @@ import lombok.Setter;
 @Setter
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ConditionsForDateDTO {
+
     @JsonProperty("valid_date")
     private String validDate;
-
     @JsonProperty("wind_spd")
     private String windSpeed;
-
     private String temp;
 }

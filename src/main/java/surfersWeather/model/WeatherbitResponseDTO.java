@@ -11,6 +11,7 @@ import java.util.List;
 @Setter
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class WeatherbitResponseDTO {
+
     @JsonProperty("city_name")
     private String cityName;
     @JsonProperty("data")
