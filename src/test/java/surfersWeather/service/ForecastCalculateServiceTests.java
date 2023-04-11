@@ -3,8 +3,11 @@ package surfersWeather.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.Spy;
 import surfersWeather.model.ForecastForRequestedDate;
 import surfersWeather.model.WeatherbitResponseDTO;
 
@@ -27,30 +30,7 @@ public class ForecastCalculateServiceTests {
     List<WeatherbitResponseDTO> weatherbitResponseDTOListWithStubbedResponses;
     List<ForecastForRequestedDate> expectedForecastForRequestedDateList;
 
-    @Test
-    public void calculatePointsForConditions_should_match_expected_values() {
-        enum EnumConditionsTest {
-            GoodConditions("11.2", "24.5", 58.1),
-            GreatConditions("18", "35", 89),
-            PoorConditions("5.7", "5.9", 23);
-
-            final String windSpeed;
-            final String temp;
-            final double expectedPoints;
-
-            EnumConditionsTest(String windSpeed, String temp, double expectedPoints) {
-                this.windSpeed = windSpeed;
-                this.temp = temp;
-                this.expectedPoints = expectedPoints;
-            }
-        }
-        for (EnumConditionsTest enumConditionsTest : EnumConditionsTest.values()) {
-            ForecastCalculateService forecastCalculateService = new ForecastCalculateService();
-            double calculatedPoints = forecastCalculateService.calculatePointsForConditions(enumConditionsTest.temp, enumConditionsTest.windSpeed);
-            Assertions.assertTrue((Math.abs(enumConditionsTest.expectedPoints - calculatedPoints) < 0.01), "Calculated points don't match with expected");
-        }
-    }
-
+    @BeforeEach
     public void init_WeatherbitResponseListWithStubbedResponses() {
         ObjectMapper objectMapper = new ObjectMapper();
         weatherbitResponseDTOListWithStubbedResponses = new ArrayList<>();
@@ -74,6 +54,7 @@ public class ForecastCalculateServiceTests {
         }
     }
 
+    @BeforeEach
     public void init_ExpectedForecastForRequestedDateList() {
         enum EnumExpectedCityForecast {
             Bridgetown("Bridgetown", "25.4", "9.6", 54.199999999999996),
@@ -104,12 +85,32 @@ public class ForecastCalculateServiceTests {
     }
 
     @Test
-    public void createCityForecastObjectsListForRequestedDate_with_stubbed_responses_should_match_hardcoded_list() {
-        init_WeatherbitResponseListWithStubbedResponses();
-        init_ExpectedForecastForRequestedDateList();
+    public void calculatePointsForConditions_should_match_expected_values() {
+        enum EnumConditionsTest {
+            GoodConditions("11.2", "24.5", 58.1),
+            GreatConditions("18", "35", 89),
+            PoorConditions("5.7", "5.9", 23);
 
+            final String windSpeed;
+            final String temp;
+            final double expectedPoints;
+
+            EnumConditionsTest(String windSpeed, String temp, double expectedPoints) {
+                this.windSpeed = windSpeed;
+                this.temp = temp;
+                this.expectedPoints = expectedPoints;
+            }
+        }
+        for (EnumConditionsTest enumConditionsTest : EnumConditionsTest.values()) {
+            ForecastCalculateService forecastCalculateService = new ForecastCalculateService();
+            double calculatedPoints = forecastCalculateService.calculatePointsForConditions(enumConditionsTest.temp, enumConditionsTest.windSpeed);
+            Assertions.assertTrue((Math.abs(enumConditionsTest.expectedPoints - calculatedPoints) < 0.01), "Calculated points don't match with expected");
+        }
+    }
+
+    @Test
+    public void createForecastForRequestedDateObject_with_stubbed_responses_should_match_hardcoded_list() {
         ForecastCalculateService forecastCalculateService = new ForecastCalculateService();
-        forecastCalculateService.setForecastForRequestedDateList(new ArrayList<>());
         forecastCalculateService.setWeatherbitResponseDTOList(weatherbitResponseDTOListWithStubbedResponses);
         forecastCalculateService.setDateString("2023-02-11");
         forecastCalculateService.createForecastForRequestedDateObjectFromResponsesMeetingRequirements();
@@ -129,19 +130,16 @@ public class ForecastCalculateServiceTests {
                     if (Double.compare(forecastForRequestedDateListFromMethod.get(i).getPointsForConditions(), (expectedForecastForRequestedDateList.get(i).getPointsForConditions())) != 0)
                         same.set(false);
                 });
-        Assertions.assertTrue(same.get(), "Created CityForecastForRequestedDate objects list don't match with expected list from stubbed responses");
+        Assertions.assertTrue(same.get(), "Created ForecastForRequestedDate objects list don't match with expected list from stubbed responses");
     }
 
     @Test
     public void findBestCityForecast_from_stubbed_responses_list_should_return_given_city_name() {
-        init_ExpectedForecastForRequestedDateList();
         String expectedBestCityName = "Bridgetown";
-
         ForecastCalculateService forecastCalculateServiceSpy = Mockito.spy(ForecastCalculateService.class);
         doNothing().when(forecastCalculateServiceSpy).createForecastForRequestedDateObjectFromResponsesMeetingRequirements();
         forecastCalculateServiceSpy.setForecastForRequestedDateList(expectedForecastForRequestedDateList);
         ForecastForRequestedDate forecastForRequestedDate = forecastCalculateServiceSpy.findBestCityForecast();
-
         Assertions.assertEquals(expectedBestCityName, forecastForRequestedDate.getCityName(), "Calculated location don't match with expected");
     }
 }

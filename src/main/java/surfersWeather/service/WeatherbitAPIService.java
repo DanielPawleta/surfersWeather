@@ -13,7 +13,6 @@ import surfersWeather.model.WeatherbitResponseDTO;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -38,14 +37,17 @@ public class WeatherbitAPIService {
     }
 
     public WeatherbitResponseDTO getForecastFromExternalAPI(CitiesEnum city) {
-        String lat = city.getLat();
-        String lon = city.getLon();
-        String uri = String.format(EXTERNAL_API_URI, lat, lon);
-        WeatherbitResponseDTO weatherbitResponseDTO = restTemplate.getForObject(uri, WeatherbitResponseDTO.class);
+        WeatherbitResponseDTO weatherbitResponseDTO = restTemplate.getForObject(prepareURI(city), WeatherbitResponseDTO.class);
         if (weatherbitResponseDTO == null) {
-            log.warn("Couldn't get data, weather response is null");
+            log.warn("Couldn't get data, weatherbit response is null");
             throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return weatherbitResponseDTO;
+    }
+
+    public String prepareURI(CitiesEnum city) {
+        String lat = city.getLat();
+        String lon = city.getLon();
+        return String.format(EXTERNAL_API_URI, lat, lon);
     }
 }
