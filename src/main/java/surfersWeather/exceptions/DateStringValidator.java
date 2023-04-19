@@ -7,11 +7,14 @@ import java.util.Date;
 
 public class DateStringValidator {
 
+    private final String regex = "\\d{4}-\\d{2}-\\d{2}";
+    private final String datePattern = "yyyy-MM-dd";
+
     public void isDateStringValid(String dateString) {
         if (dateString == null) {
             throw new DateStringParamException("Provided date string is empty");
         }
-        if (!dateString.matches("\\d{4}-\\d{2}-\\d{2}")) {
+        if (!dateString.matches(regex)) {
             throw new DateStringParamException("Wrong date pattern");
         }
         Date requestedDate;
@@ -24,7 +27,7 @@ public class DateStringValidator {
     }
 
     public Date parseDateStringToDate(String dateString) throws ParseException {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(datePattern);
         simpleDateFormat.setLenient(false);
         return simpleDateFormat.parse(dateString);
     }

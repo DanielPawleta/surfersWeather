@@ -23,6 +23,9 @@ public class ForecastCalculateService {
     private static final int MAX_TEMP = 35;
     private static final int MIN_WIND_SPEED = 5;
     private static final int MAX_WIND_SPEED = 18;
+    private static final int WIND_SPEED_FACTOR = 3;
+    private static final String FOUND_GOOD_CONDITIONS_MESSAGE = "Found best conditions at: ";
+    private static final String NO_FOUND_GOOD_CONDITIONS_MESSAGE = "No good conditions found";
     private List<ForecastForRequestedDate> forecastForRequestedDateList;
     private List<WeatherbitResponseDTO> weatherbitResponseDTOList;
     private String dateString;
@@ -31,13 +34,13 @@ public class ForecastCalculateService {
         createForecastForRequestedDateObjectFromResponsesMeetingRequirements();
         Optional<ForecastForRequestedDate> cityForecastOptional = getMaxCalculatedPointsForConditions();
         if (cityForecastOptional.isPresent()) {
-            log.info("Found best conditions at: {}", cityForecastOptional.get().getCityName());
-            cityForecastOptional.get().setMessage("Found best conditions at: ");
+            log.info(FOUND_GOOD_CONDITIONS_MESSAGE + cityForecastOptional.get().getCityName());
+            cityForecastOptional.get().setMessage(FOUND_GOOD_CONDITIONS_MESSAGE);
             return cityForecastOptional.get();
         } else {
-            log.info("No good conditions found");
+            log.info(NO_FOUND_GOOD_CONDITIONS_MESSAGE);
             ForecastForRequestedDate forecastForRequestedDate = new ForecastForRequestedDate();
-            forecastForRequestedDate.setMessage("No good conditions found");
+            forecastForRequestedDate.setMessage(NO_FOUND_GOOD_CONDITIONS_MESSAGE);
             return forecastForRequestedDate;
         }
     }
@@ -60,11 +63,16 @@ public class ForecastCalculateService {
 
     private void createForecastForRequestedDateObject(WeatherbitResponseDTO weatherbitResponseDTO, ConditionsForDateDTO conditionsForDateDTO) {
         String cityName = weatherbitResponseDTO.getCityName();
-        log.info("City name = {} ", cityName);
+        log.info("Creating forecast for requested date object for city = {} ", cityName);
         String temp = conditionsForDateDTO.getTemp();
         String windSpeed = conditionsForDateDTO.getWindSpeed();
         double pointsForConditions = calculatePointsForConditions(temp, windSpeed);
-        ForecastForRequestedDate forecastForRequestedDate = new ForecastForRequestedDate(cityName, temp, windSpeed, pointsForConditions, "");
+        ForecastForRequestedDate forecastForRequestedDate = new ForecastForRequestedDate(
+                cityName,
+                temp,
+                windSpeed,
+                pointsForConditions,
+                "");
         forecastForRequestedDateList.add(forecastForRequestedDate);
     }
 
@@ -72,7 +80,7 @@ public class ForecastCalculateService {
         log.info("Temp = {} wind speed = {}", temp, windSpd);
         double temperature = Double.parseDouble(temp);
         double windSpeed = Double.parseDouble(windSpd);
-        double pointsForConditions = windSpeed * 3 + temperature;
+        double pointsForConditions = windSpeed * WIND_SPEED_FACTOR + temperature;
         log.info("Points = {}", pointsForConditions);
         return pointsForConditions;
     }
