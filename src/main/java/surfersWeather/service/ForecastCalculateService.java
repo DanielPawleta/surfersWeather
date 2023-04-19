@@ -25,7 +25,7 @@ public class ForecastCalculateService {
     private static final int MAX_WIND_SPEED = 18;
     private static final int WIND_SPEED_FACTOR = 3;
     private static final String FOUND_GOOD_CONDITIONS_MESSAGE = "Found best conditions at: ";
-    private static final String NO_FOUND_GOOD_CONDITIONS_MESSAGE = "No good conditions found";
+    private static final String NOT_FOUND_GOOD_CONDITIONS_MESSAGE = "No good conditions found";
     private List<ForecastForRequestedDate> forecastForRequestedDateList;
     private List<WeatherbitResponseDTO> weatherbitResponseDTOList;
     private String dateString;
@@ -38,9 +38,9 @@ public class ForecastCalculateService {
             cityForecastOptional.get().setMessage(FOUND_GOOD_CONDITIONS_MESSAGE);
             return cityForecastOptional.get();
         } else {
-            log.info(NO_FOUND_GOOD_CONDITIONS_MESSAGE);
+            log.info(NOT_FOUND_GOOD_CONDITIONS_MESSAGE);
             ForecastForRequestedDate forecastForRequestedDate = new ForecastForRequestedDate();
-            forecastForRequestedDate.setMessage(NO_FOUND_GOOD_CONDITIONS_MESSAGE);
+            forecastForRequestedDate.setMessage(NOT_FOUND_GOOD_CONDITIONS_MESSAGE);
             return forecastForRequestedDate;
         }
     }
